@@ -70,7 +70,7 @@ class Csv2Coco:
         image['height'] = 512#img.shape[0]
         image['width'] = 512#img.shape[1]
         image['id'] = path
-        image['file_name'] = path + '.jpg'
+        image['file_name'] = path + '.png'
         return image
 
     # 'annotations' field
