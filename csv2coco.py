@@ -70,7 +70,7 @@ class Csv2Coco:
         image['height'] = 512#img.shape[0]
         image['width'] = 512#img.shape[1]
         image['id'] = path
-        image['filename'] = path + '.jpg'
+        image['file_name'] = path + '.jpg'
         return image
 
     # 'annotations' field
@@ -137,10 +137,10 @@ if __name__ == '__main__':
     #Create directory
     if not os.path.exists('%scoco/annotations/'%saved_coco_path):
         os.makedirs('%scoco/annotations/'%saved_coco_path)
-    if not os.path.exists('%scoco/images/train2017/'%saved_coco_path):
-        os.makedirs('%scoco/images/train2017/'%saved_coco_path)
-    if not os.path.exists('%scoco/images/val2017/'%saved_coco_path):
-        os.makedirs('%scoco/images/val2017/'%saved_coco_path)
+    # if not os.path.exists('%scoco/images/train2017/'%saved_coco_path):
+    #     os.makedirs('%scoco/images/train2017/'%saved_coco_path)
+    # if not os.path.exists('%scoco/images/val2017/'%saved_coco_path):
+    #     os.makedirs('%scoco/images/val2017/'%saved_coco_path)
 
     #Convert CSV to Json
     print('Converting Trainset...')
