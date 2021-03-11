@@ -4,6 +4,7 @@ Convert CSV to COCO format
 
 import os
 import json
+import argparse
 import pandas as pd
 import numpy as np
 import glob
@@ -19,7 +20,7 @@ class_to_id = {'Aortic enlargement':1, 'Atelectasis':2, 'Calcification':3, 'Card
                }
 
 class Csv2Coco:
-    def __init__(self, image_dir, total_annot):
+    def __init__(self, image_dir, total_annot, arg):
         self.images = []
         self.annotations = []
         self.categories = [] #dict of mapping {id:, name:}
@@ -27,6 +28,7 @@ class Csv2Coco:
         self.ann_id = 0
         self.image_dir = image_dir
         self.total_annot = total_annot
+        self.arg = arg
 
     def save_coco_json(self, instance, save_path):
         json.dump(instance, open(save_path, 'w'), ensure_ascii=False, indent=2)
@@ -67,10 +69,10 @@ class Csv2Coco:
         image = {}
         #print(path)
         #img = cv2.imread(self.image_dir + path + '.jpg')
-        image['height'] = 512#img.shape[0]
-        image['width'] = 512#img.shape[1]
+        image['height'] = self.arg.image_size
+        image['width'] = self.arg.image_size
         image['id'] = path
-        image['file_name'] = path + '.png'
+        image['file_name'] = path + '.' + self.arg.file_type
         return image
 
     # 'annotations' field
@@ -115,9 +117,17 @@ class Csv2Coco:
 
 
 if __name__ == '__main__':
+    parser = argparse.ArugmentParser(description='VinBigData_trainval')\
+    parser.add_argument('--image-size', type=int, required=True, help='image size used for training')
+    parser.add_argument('--file-type', type=str, required=True, help='image extension name')
+    parser.add_argument('--save-path', type=str, default='data', help='saved path')
+    args = parser.parse_args()
+
+    print(args)
+    #read rescaled train data
     csv_file = 'data/final_train.csv'
     image_dir = ''
-    saved_coco_path = 'data'
+    saved_coco_path = args.save_path
 
     total_csv_annotations = {}
     annotations = pd.read_csv(csv_file, header=None, skiprows=1).values
@@ -144,7 +154,7 @@ if __name__ == '__main__':
 
     #Convert CSV to Json
     print('Converting Trainset...')
-    l2c_train = Csv2Coco(image_dir=image_dir, total_annot=total_csv_annotations)
+    l2c_train = Csv2Coco(image_dir=image_dir, total_annot=total_csv_annotations, arg=args)
     train_instance = l2c_train.to_coco(total_keys)
     l2c_train.save_coco_json(train_instance, '%scoco/annotations/instances_train2020.json'%saved_coco_path)
     # for file in train_keys:
@@ -152,7 +162,7 @@ if __name__ == '__main__':
     # for file in val_keys:
     #     shutil.copy(image_dir+file+'.jpg',"%scoco/images/val2020/"%saved_coco_path)
     print('Converting Valid set')
-    l2c_val = Csv2Coco(image_dir=image_dir,total_annot=total_csv_annotations)
+    l2c_val = Csv2Coco(image_dir=image_dir,total_annot=total_csv_annotations, arg=args)
     val_instance = l2c_val.to_coco(val_keys)
     l2c_val.save_coco_json(val_instance, '%scoco/annotations/instances_val2020.json'%saved_coco_path)
     print('COCO Conversion Done!')
