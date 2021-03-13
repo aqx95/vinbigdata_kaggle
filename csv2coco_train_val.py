@@ -9,7 +9,7 @@ import pandas as pd
 import numpy as np
 import glob
 import shutil
-from sklearn.model_selection import train_test_split
+
 np.random.seed(2020)
 
 #mapper from class to id
@@ -18,6 +18,7 @@ class_to_id = {'Aortic enlargement':1, 'Atelectasis':2, 'Calcification':3, 'Card
                	   'Other lesion':10, 'Pleural effusion':11, 'Pleural thickening':12, 'Pneumothorax':13,
                	   'Pulmonary fibrosis':14
                }
+
 
 class Csv2Coco:
     def __init__(self, image_dir, total_annot, arg):
@@ -119,6 +120,7 @@ class Csv2Coco:
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='VinBigData_trainval')
     parser.add_argument('--image-size', type=int, required=True, help='image size used for training')
+    parser.add_argument('--fold-num', type=int, required=True, help='training fold number')
     parser.add_argument('--file-type', type=str, required=True, help='image extension name')
     parser.add_argument('--save-path', type=str, default='data', help='saved path')
     args = parser.parse_args()
@@ -129,20 +131,31 @@ if __name__ == '__main__':
     image_dir = ''
     saved_coco_path = args.save_path
 
-    total_csv_annotations = {}
-    annotations = pd.read_csv(csv_file, header=None, skiprows=1).values
-    for annotation in annotations:
+    total_train_annotations = {}
+    total_val_annotations = {}
+    annotations = pd.read_csv(csv_file)
+    train_annotation = annotations[annotations['fold'] != args.fold_num].values
+    val_annotation = annotations[annotations['fold'] == args.fold_num].values
+
+    for annotation in train_annotation:
         key = annotation[0].split(os.sep)[-1] #image_id
-        value = np.array([annotation[1:]]) #remaining col
-        if key in total_csv_annotations.keys():
-            total_csv_annotations[key] = np.concatenate((total_csv_annotations[key], value), axis=0)
+        value = np.array([annotation[1:-1]]) #remaining col
+        if key in total_train_annotations.keys():
+            total_train_annotations[key] = np.concatenate((total_train_annotations[key], value), axis=0)
         else:
-            total_csv_annotations[key] = value
+            total_train_annotations[key] = value
+    train_keys = list(total_train_annotations.keys())
 
-    total_keys = list(total_csv_annotations.keys())
-    train_keys, val_keys = train_test_split(total_keys, test_size=0.2)
+    for annotation in val_annotation:
+        key = annotation[0].split(os.sep)[-1] #image_id
+        value = np.array([annotation[1:-1]]) #remaining col
+        if key in total_val_annotations.keys():
+            total_val_annotations[key] = np.concatenate((total_val_annotations[key], value), axis=0)
+        else:
+            total_val_annotations[key] = value
+    val_keys = list(total_val_annotations.keys())
+
     print("train_n:", len(train_keys), 'val_n:', len(val_keys))
-
 
     #Create directory
     if not os.path.exists('%scoco/annotations/'%saved_coco_path):
@@ -154,15 +167,15 @@ if __name__ == '__main__':
 
     #Convert CSV to Json
     print('Converting Trainset...')
-    l2c_train = Csv2Coco(image_dir=image_dir, total_annot=total_csv_annotations, arg=args)
-    train_instance = l2c_train.to_coco(total_keys)
+    l2c_train = Csv2Coco(image_dir=image_dir, total_annot=total_train_annotations, arg=args)
+    train_instance = l2c_train.to_coco(train_keys)
     l2c_train.save_coco_json(train_instance, '%scoco/annotations/instances_train2020.json'%saved_coco_path)
     # for file in train_keys:
     #     shutil.copy(image_dir+file+'.jpg',"%scoco/images/train2020/"%saved_coco_path)
     # for file in val_keys:
     #     shutil.copy(image_dir+file+'.jpg',"%scoco/images/val2020/"%saved_coco_path)
     print('Converting Valid set')
-    l2c_val = Csv2Coco(image_dir=image_dir,total_annot=total_csv_annotations, arg=args)
+    l2c_val = Csv2Coco(image_dir=image_dir,total_annot=total_val_annotations, arg=args)
     val_instance = l2c_val.to_coco(val_keys)
     l2c_val.save_coco_json(val_instance, '%scoco/annotations/instances_val2020.json'%saved_coco_path)
     print('COCO Conversion Done!')
