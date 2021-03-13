@@ -64,7 +64,7 @@ class Csv2Coco:
 
 
 if __name__ == '__main__':
-    parser = argparse.ArugmentParser(description='VinBigData_trainval')\
+    parser = argparse.ArgumentParser(description='VinBigData_test')
     parser.add_argument('--image-size', type=int, required=True, help='image size used for training')
     parser.add_argument('--file-type', type=str, required=True, help='image extension name')
     parser.add_argument('--save-path', type=str, default='data', help='saved path')
