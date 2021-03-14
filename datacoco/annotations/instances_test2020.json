@@ -18008,59 +18008,59 @@
   "annotations": [],
   "categories": [
     {
-      "id": 1,
+      "id": 0,
       "name": "Aortic enlargement"
     },
     {
-      "id": 2,
+      "id": 1,
       "name": "Atelectasis"
     },
     {
-      "id": 3,
+      "id": 2,
       "name": "Calcification"
     },
     {
-      "id": 4,
+      "id": 3,
       "name": "Cardiomegaly"
     },
     {
-      "id": 5,
+      "id": 4,
       "name": "Consolidation"
     },
     {
-      "id": 6,
+      "id": 5,
       "name": "ILD"
     },
     {
-      "id": 7,
+      "id": 6,
       "name": "Infiltration"
     },
     {
-      "id": 8,
+      "id": 7,
       "name": "Lung Opacity"
     },
     {
-      "id": 9,
+      "id": 8,
       "name": "Nodule/Mass"
     },
     {
-      "id": 10,
+      "id": 9,
       "name": "Other lesion"
     },
     {
-      "id": 11,
+      "id": 10,
       "name": "Pleural effusion"
     },
     {
-      "id": 12,
+      "id": 11,
       "name": "Pleural thickening"
     },
     {
-      "id": 13,
+      "id": 12,
       "name": "Pneumothorax"
     },
     {
-      "id": 14,
+      "id": 13,
       "name": "Pulmonary fibrosis"
     }
   ]

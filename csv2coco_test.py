@@ -12,13 +12,12 @@ import os
 import shutil
 from IPython import embed
 from sklearn.model_selection import train_test_split
-np.random.seed(2020)
 
-classname_to_id = {'Aortic enlargement':1, 'Atelectasis':2, 'Calcification':3, 'Cardiomegaly':4,
-    		   	   'Consolidation':5, 'ILD':6, 'Infiltration':7, 'Lung Opacity':8, 'Nodule/Mass':9,
-               	   'Other lesion':10, 'Pleural effusion':11, 'Pleural thickening':12, 'Pneumothorax':13,
-               	   'Pulmonary fibrosis':14
-                   }
+classname_to_id = {'Aortic enlargement':0, 'Atelectasis':1, 'Calcification':2, 'Cardiomegaly':3,
+    		   	   'Consolidation':4, 'ILD':5, 'Infiltration':6, 'Lung Opacity':7, 'Nodule/Mass':8,
+               	   'Other lesion':9, 'Pleural effusion':10, 'Pleural thickening':11, 'Pneumothorax':12,
+               	   'Pulmonary fibrosis':13
+               }
 
 class Csv2Coco:
     def __init__(self, img_dir, total_img, arg):
