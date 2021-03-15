@@ -125,7 +125,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     print(args)
-    #read rescaled train data
+    #read preprocessed train data
     csv_file = 'data/final_train.csv'
     image_dir = ''
     saved_coco_path = args.save_path
@@ -133,6 +133,9 @@ if __name__ == '__main__':
     total_train_annotations = {}
     total_val_annotations = {}
     annotations = pd.read_csv(csv_file)
+    #rescale to training image size
+    annotations[['x_min','x_max']] = annotations[['x_min','x_max']].apply(lambda x:round(x*args.image_size,1))
+    annotations[['y_min','y_max']] = annotations[['y_min','y_max']].apply(lambda x:round(x*args.image_size,1))
     train_annotation = annotations[annotations['fold'] != args.fold_num].values
     val_annotation = annotations[annotations['fold'] == args.fold_num].values
 
@@ -147,7 +150,7 @@ if __name__ == '__main__':
 
     for annotation in val_annotation:
         key = annotation[0].split(os.sep)[-1] #image_id
-        value = np.array([annotation[1:-1]]) #remaining col
+        value = np.array([annotation[1:-2]]) #remaining col
         if key in total_val_annotations.keys():
             total_val_annotations[key] = np.concatenate((total_val_annotations[key], value), axis=0)
         else:
