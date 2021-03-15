@@ -168,7 +168,7 @@ if __name__ == '__main__':
     print('Converting Trainset...')
     l2c_train = Csv2Coco(image_dir=image_dir, total_annot=total_train_annotations, arg=args)
     train_instance = l2c_train.to_coco(train_keys)
-    l2c_train.save_coco_json(train_instance, '%scoco/annotations/instances_train2020.json'%saved_coco_path)
+    l2c_train.save_coco_json(train_instance, '%scoco/annotations_%s/instances_train2020.json'%(saved_coco_path, args.image_size))
     # for file in train_keys:
     #     shutil.copy(image_dir+file+'.jpg',"%scoco/images/train2020/"%saved_coco_path)
     # for file in val_keys:
@@ -176,5 +176,5 @@ if __name__ == '__main__':
     print('Converting Valid set')
     l2c_val = Csv2Coco(image_dir=image_dir,total_annot=total_val_annotations, arg=args)
     val_instance = l2c_val.to_coco(val_keys)
-    l2c_val.save_coco_json(val_instance, '%scoco/annotations/instances_val2020.json'%saved_coco_path)
+    l2c_val.save_coco_json(val_instance, '%scoco/annotations_%s/instances_val2020.json'%(saved_coco_path, args.image_size))
     print('COCO Conversion Done!')
