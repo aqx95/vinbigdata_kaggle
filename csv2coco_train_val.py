@@ -157,8 +157,8 @@ if __name__ == '__main__':
     print("train_n:", len(train_keys), 'val_n:', len(val_keys))
 
     #Create directory
-    if not os.path.exists('%scoco/annotations/'%saved_coco_path):
-        os.makedirs('%scoco/annotations/'%saved_coco_path)
+    if not os.path.exists('%scoco/annotations_%s/'%(saved_coco_path,args.image_size)):
+        os.makedirs('%scoco/annotations_%s/'%saved_coco_path,args.image_size))
     # if not os.path.exists('%scoco/images/train2017/'%saved_coco_path):
     #     os.makedirs('%scoco/images/train2017/'%saved_coco_path)
     # if not os.path.exists('%scoco/images/val2017/'%saved_coco_path):

@@ -85,4 +85,4 @@ if __name__ == '__main__':
     print('Converting Testset...')
     l2c_test = Csv2Coco(img_dir=image_dir, total_img=total_img, arg=args)
     test_instance = l2c_test.to_coco()
-    l2c_test.save_coco_json(test_instance, '%scoco/annotations/instances_test2020.json'%saved_coco_path)
+    l2c_test.save_coco_json(test_instance, '%scoco/annotations_%s/instances_test2020.json'%(saved_coco_path,args.image_size))
