@@ -141,7 +141,7 @@ if __name__ == '__main__':
 
     for annotation in train_annotation:
         key = annotation[0].split(os.sep)[-1] #image_id
-        value = np.array([annotation[1:-1]]) #remaining col
+        value = np.array([annotation[1:-3]]) #remaining col
         if key in total_train_annotations.keys():
             total_train_annotations[key] = np.concatenate((total_train_annotations[key], value), axis=0)
         else:
@@ -150,7 +150,7 @@ if __name__ == '__main__':
 
     for annotation in val_annotation:
         key = annotation[0].split(os.sep)[-1] #image_id
-        value = np.array([annotation[1:-2]]) #remaining col
+        value = np.array([annotation[1:-3]]) #remaining col
         if key in total_val_annotations.keys():
             total_val_annotations[key] = np.concatenate((total_val_annotations[key], value), axis=0)
         else:
