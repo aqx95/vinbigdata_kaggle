@@ -54,8 +54,9 @@ class Fitter:
             if self.best_loss > valid_loss:
                 self.best_loss = valid_loss
             if self.best_auc < auc_roc:
-                self.best_auc = auc_roc
+                self.logger.info(f"Epoch {self.epoch}: Saving model... | AUC improvement {self.best_auc} -> {auc_roc}")
                 self.save(os.path.join(self.config.SAVE_PATH, '{}_fold{}.pt').format(self.config.model_name, fold))
+                self.best_auc = auc_roc
 
             #Update Scheduler
             if self.config.val_step_scheduler:
