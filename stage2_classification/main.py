@@ -66,6 +66,7 @@ def train_loop(df_folds: pd.DataFrame, config, device, fold_num:int=None, train_
             oof_df = pd.concat([oof_df, _oof_df])
             curr_fold_auc = sklearn.metrics.roc_auc_score(_oof_df['label'], _oof_df['oof_pred'])
             logger.info("Fold {} AUC Score: {}".format(fold, curr_fold_auc))
+            logger.info("-------------------------------------------------------------------")
 
         oof_auc = sklearn.metrics.roc_auc_score(oof_df['label'], oof_df['oof_pred'])
         logger.info("5 Folds OOF AUC Score: {}".format(oof_auc))
