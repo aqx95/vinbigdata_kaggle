@@ -63,6 +63,8 @@ if __name__ == '__main__':
                         help='number of training epoch')
     args = parser.parse_args()
 
+    os.chdir('mmdetection')
+
     #overwrite
     config = GlobalConfig
     config.num_epcohs = args.num_epochs
@@ -81,8 +83,6 @@ if __name__ == '__main__':
     with zipfile.ZipFile(config.data_path, 'r') as zip_ref:
         zip_ref.extractall()
     logger.write('Extracting images DONE!\n')
-
-    os.chdir('mmdetection')
 
     logger.write("Reading config from: {}\n".format(config.config_file))
     cfg = Config.fromfile(config.config_file)
