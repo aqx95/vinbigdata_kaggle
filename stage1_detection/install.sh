@@ -6,6 +6,7 @@ pip install mmcv-full
 
 # Install mmdetection
 git clone https://github.com/open-mmlab/mmdetection.git
+%cd mmdetection
 
 # install Pillow 7.0.0 back in order to avoid bug in colab
 #!pip install Pillow==7.0.0
