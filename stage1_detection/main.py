@@ -8,6 +8,7 @@ import pandas as pd
 from tqdm import tqdm
 from config import GlobalConfig
 
+import mmcv
 from mmcv import Config
 from mmdet.apis import set_random_seed
 from mmdet.datasets import build_dataset, build_dataloader
@@ -78,11 +79,11 @@ if __name__ == '__main__':
     logger = open(os.path.join(config.log_path, 'log.txt'), 'a')
     logger.write('Using GPU {} \n'.format(torch.cuda.get_device_name(0)))
 
-    logger.write('Extracting train and test images...\n')
-    #extract image data
-    with zipfile.ZipFile(config.data_path, 'r') as zip_ref:
-        zip_ref.extractall()
-    logger.write('Extracting images DONE!\n')
+    # logger.write('Extracting train and test images...\n')
+    # #extract image data
+    # with zipfile.ZipFile(config.data_path, 'r') as zip_ref:
+    #     zip_ref.extractall()
+    # logger.write('Extracting images DONE!\n')
 
     logger.write("Reading config from: {}\n".format(config.config_file))
     cfg = Config.fromfile(config.config_file)
@@ -99,14 +100,14 @@ if __name__ == '__main__':
     cfg.data.val.ann_file = '../../data/datacoco/annotations_1024/instances_val2020.json'
     cfg.data.test.ann_file = '../../data/datacoco/annotations_1024/instances_test2020.json'
     logger.write('Begin training... \n')
-    detector_train(cfg)
+    #detector_train(cfg)
 
     ## Inference
     cfg.data.test.test_mode=True
     cfg.data.test.pipeline[0].type='LoadImageFromFile'
     cfg.model.test_cfg.score_thr = config.score_threshold
     config_file = cfg
-    checkpoint_file = glob.glob(os.path.join(config.output_path,'epoch_*.pth'))[-1]
+    checkpoint_file = sorted(glob.glob(os.path.join(config.output_path,'epoch_*.pth')))[-1]
     logger.write('Read checkpoint at: {}\n'.format(checkpoint_file))
 
     # build the model from a config file and a checkpoint file
