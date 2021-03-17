@@ -14,24 +14,33 @@ from albumentations.pytorch import ToTensorV2
 
 
 class VinData(Dataset):
-    def __init__(self, df, config=None, transforms=None):
+    def __init__(self, df, config=None, transforms=None, mode='train'):
         self.df = df
         self.config = config
         self.transform = transforms
+        self.mode = mode
 
     def __len__(self):
         return len(self.df)
 
     def __getitem__(self, idx):
-        img_path = os.path.join(self.config.TRAIN_PATH, self.df.loc[idx,'image_id']+'.png')
+        if self.mode != 'test':
+            data_path = self.config.TRAIN_PATH
+            labels = self.df.loc[idx, 'label']
+        else:
+            data_path = self.config.TEST_PATH
+        img_path = os.path.join(data_path, self.df.loc[idx,'image_id']+'.png')
         img = cv2.imread(img_path, 0)
         img = np.stack([img,img,img], axis=2)
-        labels = self.df.loc[idx, 'label']
 
         if self.transform:
             img = self.transform(image=img)['image'] # return (C x H x W)
 
-        return img, labels
+        if self.mode != 'test':
+            return img, labels
+        else:
+            return img
+
 
 # Augmentations
 def get_train_transforms(config):
@@ -55,6 +64,7 @@ def get_valid_transforms(config):
             ToTensorV2(p=1.0),
         ], p=1.)
 
+
 # Prepare dataloaders
 def prepare_loader(train_df, valid_df, config):
     train_ds = VinData(train_df, config, transforms=get_train_transforms(config))
@@ -73,3 +83,14 @@ def prepare_loader(train_df, valid_df, config):
         shuffle=False)
 
     return train_loader, val_loader
+
+
+def prepare_testloader(test_df, config):
+    test_ds = VinData(test_df, config, transforms=get_valid_transforms(config), mode='test')
+    test_loader = DataLoader(
+        test_ds,
+        batch_size=config.batch_size,
+        num_workers=2,
+        shuffle=False)
+
+    return test_loader
