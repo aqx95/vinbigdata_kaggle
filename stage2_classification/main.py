@@ -76,16 +76,11 @@ def train_loop(df_folds: pd.DataFrame, config, device, fold_num:int=None, train_
 ## Main run
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='vinbigdata')
-    parser.add_argument('--num-epochs', type=int, default=20,
-                        help='number of training epochs')
-    parser.add_argument('--image-size', type=int, default=512,
-                        help='image size for training')
-    parser.add_argument('--train-one-fold', type=bool, default=False,
-                        help='train one/all folds')
-    parser.add_argument('--model', type=str, required=True,
-                        help='model architecture to be used')
-    parser.add_argument('--model-name', type=str, required=True,
-                        help='pretrained model variant')
+    parser.add_argument('--num-epochs', type=int, default=20, help='number of training epochs')
+    parser.add_argument('--image-size', type=int, default=512, help='image size for training')
+    parser.add_argument('--train-one-fold', type=bool, default=False, help='train one/all folds')
+    parser.add_argument('--model', type=str, required=True, help='model architecture to be used')
+    parser.add_argument('--model-name', type=str, required=True, help='pretrained model variant')
     args = parser.parse_args()
 
     #overwrite settings
