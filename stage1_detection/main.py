@@ -67,7 +67,7 @@ if __name__ == '__main__':
 
     #overwrite
     config = GlobalConfig
-    config.num_epcohs = args.num_epochs
+    config.num_epochs = args.num_epochs
     config.image_size = args.image_size
 
     if not os.path.exists(config.log_path):
