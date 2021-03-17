@@ -48,6 +48,7 @@ class GlobalConfig:
     LOG_PATH = 'log'
     CSV_PATH = '../data/csv'
     TRAIN_PATH = '../../train'
+    TEST_PATH = '../../test'
 
     model = 'effnet'
     model_name = 'tf_efficientnet_b3'
