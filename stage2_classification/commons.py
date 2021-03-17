@@ -7,10 +7,10 @@ from sklearn.metrics import roc_auc_score
 
 
 def log(config, name):
-    log_file = os.path.join(config.LOG_PATH, 'log.txt')
-    if not os.path.isfile(log_file):
+    if not os.path.exists(config.LOG_PATH):
         os.makedirs(config.LOG_PATH)
-        open(log_file, "w+").close()
+    log_file = os.path.join(config.LOG_PATH, 'log.txt')
+    open(log_file, "w+").close()
 
     console_log_format = "%(levelname)s %(message)s"
     file_log_format = "%(levelname)s: %(asctime)s: %(message)s"

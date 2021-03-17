@@ -1,6 +1,7 @@
 import os
 import cv2
 import torch
+import numpy as np
 from torch.utils.data import Dataset, DataLoader
 
 from albumentations import (
@@ -22,7 +23,7 @@ class VinData(Dataset):
         return len(self.df)
 
     def __getitem__(self, idx):
-        img_path = os.path.join(config.TRAIN_PATH, self.df.loc[idx,'image_id']+'.png')
+        img_path = os.path.join(self.config.TRAIN_PATH, self.df.loc[idx,'image_id']+'.png')
         img = cv2.imread(img_path, 0)
         img = np.stack([img,img,img], axis=2)
         labels = self.df.loc[idx, 'label']
@@ -63,12 +64,12 @@ def prepare_loader(train_df, valid_df, config):
         train_ds,
         batch_size=config.batch_size,
         shuffle=True,
-        num_workers=4)
+        num_workers=2)
 
     val_loader = DataLoader(
         valid_ds,
         batch_size=config.batch_size,
-        num_workers=4,
+        num_workers=2,
         shuffle=False)
 
     return train_loader, val_loader

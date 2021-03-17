@@ -6,6 +6,8 @@ import numpy as np
 import datetime
 import time
 import logging
+import sklearn
+from sklearn.metrics import roc_auc_score
 
 from loss import loss_fn
 from commons import Meter
@@ -44,7 +46,7 @@ class Fitter:
             train_loss = self.train_one_epoch(train_loader)
             self.logger.info("[RESULTS] Train Epoch: {} | Train Loss: {}".format(self.epoch, train_loss))
             valid_loss, auc_roc, val_pred = self.validate_one_epoch(valid_loader)
-            self.logger.info("[RESULTS] Validation Epoch: {} | Valid Loss: {} | AUC: {}".format(self.epoch, valid_loss, auc_roc))
+            self.logger.info("[RESULTS] Validation Epoch: {} | Valid Loss: {} | AUC: {.3f}".format(self.epoch, valid_loss, auc_roc))
 
             self.monitored_metrics = auc_roc
             self.oof = val_pred
@@ -94,8 +96,9 @@ class Fitter:
 
     def validate_one_epoch(self, valid_loader):
         self.model.eval()
+        full_label = []
+        full_pred = []
         summary_loss = Meter()
-        auc_roc = Meter()
         pbar = tqdm(enumerate(valid_loader), total=len(valid_loader))
         val_prediction = []
 
@@ -105,25 +108,19 @@ class Fitter:
                 batch_size = labels.shape[0]
 
                 logits = self.model(img)
-                labels = labels.unsqueeze(1)
-                loss = self.loss(logits, labels.float())
+                loss = self.loss(logits, labels.unsqueeze(1).float())
                 summary_loss.update(loss.item(), batch_size)
                 output = torch.sigmoid(logits)
-                output = output.cpu().detach().numpy()
-                labels = labels.cpu().detach().numpy()
-                try:
-                    auc = sklearn.metrics.roc_auc_score(labels, output)
-                    auc_roc.update(auc.item(), batch_size)
-                except ValueError:
-                    pass
-                val_prediction.append(output)
+                full_pred.append(output.cpu().detach())
+                full_label.append(labels.cpu().detach())
 
                 description = f"Valid Steps: {step}/{len(valid_loader)} Summary Loss: {summary_loss.avg:.3f}"
                 pbar.set_description(description)
 
-        val_pred = np.concatenate(val_prediction, axis=0)
-        auc_roc = auc_roc.avg
-        return summary_loss.avg, auc_roc, val_pred
+        full_pred = np.concatenate(full_pred, axis=0)
+        full_label = np.concatenate(full_label, axis=0)
+        auc_roc = sklearn.metrics.roc_auc_score(full_label, full_pred)
+        return summary_loss.avg, auc_roc, full_pred
 
 
     def save(self, path):

@@ -42,12 +42,12 @@ class GlobalConfig:
                                              'reduction':'mean'},
                         'labelsmoothloss': {'num_class':2, 'smoothing':0.3, 'dim':-1},}
 
-    image_col_name = 'image_id'
+    IMAGE_COL = 'image_id'
     TARGET_COL = 'label'
     SAVE_PATH = 'save'
     LOG_PATH = 'log'
-    CSV_PATH = ''
-    TRAIN_PATH = '../input/vinbigdata/train'
+    CSV_PATH = '../data/csv'
+    TRAIN_PATH = '../../train'
 
     model = 'effnet'
     model_name = 'tf_efficientnet_b3'

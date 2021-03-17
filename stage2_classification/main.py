@@ -13,6 +13,7 @@ import sklearn
 import torch.nn.functional as F
 from glob import glob
 from skimage import io
+from sklearn.model_selection import StratifiedKFold
 from sklearn.metrics import roc_auc_score
 
 from config import GlobalConfig
@@ -54,19 +55,19 @@ def train_loop(df_folds: pd.DataFrame, config, device, fold_num:int=None, train_
     oof_df = pd.DataFrame()
 
     if train_one_fold:
-        _oof_df = train_single_fold(df_folds=df_folds, config=config, device=device, fold=fold_num
+        _oof_df = train_single_fold(df_folds=df_folds, config=config, device=device, fold=fold_num)
         oof_df = pd.concat([oof_df, _oof_df])
-        curr_fold_auc = sklearn.metrics.roc_auc_score(_oof_df['label'].unsqueeze(1), _oof_df['oof_pred'])
+        curr_fold_auc = sklearn.metrics.roc_auc_score(_oof_df['label'], _oof_df['oof_pred'])
         logger.info("Fold {} AUC Score: {}".format(fold_num, curr_fold_auc))
 
     else:
         for fold in (number+1 for number in range(config.num_folds)):
             _oof_df = train_single_fold(df_folds=df_folds, config=config, device=device, fold=fold)
             oof_df = pd.concat([oof_df, _oof_df])
-            curr_fold_auc = sklearn.metrics.roc_auc_score(_oof_df['label'].unsqueeze(1), _oof_df['oof_pred'])
+            curr_fold_auc = sklearn.metrics.roc_auc_score(_oof_df['label'], _oof_df['oof_pred'])
             logger.info("Fold {} AUC Score: {}".format(fold, curr_fold_auc))
 
-        oof_auc = sklearn.metrics.roc_auc_score(oof_df['label'].unsqueeze(1), oof_df['oof_pred'])
+        oof_auc = sklearn.metrics.roc_auc_score(oof_df['label'], oof_df['oof_pred'])
         logger.info("5 Folds OOF AUC Score: {}".format(oof_auc))
         oof_df.to_csv(f"oof_{config.model_name}.csv")
 
@@ -99,7 +100,26 @@ if __name__ == '__main__':
     #initialise logger
     logger = log(config, 'training')
     logger.info(config.__dict__)
-    logger.info("--------------------")
+    logger.info("-------------------------------------------------------------------")
+
+    train = pd.read_csv(os.path.join(config.CSV_PATH,'train.csv'))
+    logger.info(f'Shape: {train.shape} | Number of unique: {train.image_id.nunique()}')
+
+    # convert to labels 0 (normal) and 1 (abnormal)
+    train['label'] = -1
+    train.loc[train.class_id==14, 'label'] = 0
+    train.loc[train.class_id!=14, 'label'] = 1
+
+    train.drop_duplicates(subset=['image_id'], inplace=True)
+    train = train[['image_id','label']].reset_index(drop=True)
+    logger.info(f'Shape: {train.shape} | Number of unique: {train.image_id.nunique()}')
+    logger.info("-------------------------------------------------------------------")
+
+    #split fold
+    train['fold'] = -1
+    skf = StratifiedKFold(n_splits=config.num_folds, shuffle=True, random_state=config.seed)
+    for fold, (train_idx, val_idx) in enumerate(skf.split(train, y=train[config.TARGET_COL])):
+        train.loc[val_idx, 'fold'] = fold+1
 
     #training
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
