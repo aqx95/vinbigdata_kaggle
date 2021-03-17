@@ -76,7 +76,7 @@ if __name__ == '__main__':
       os.makedirs(config.checkpoint_path)
 
     logger = open(os.path.join(config.log_path, 'log.txt'), 'a')
-    logger.write('Using GPU {}'.format(torch.cuda.get_device_name(0)))
+    logger.write('Using GPU {} \n'.format(torch.cuda.get_device_name(0)))
 
     logger.write('Extracting train and test images...\n')
     #extract image data
