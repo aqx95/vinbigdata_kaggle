@@ -2,8 +2,8 @@ class GlobalConfig:
     seed = 2020
     num_classes = 1
     batch_size = 16
-    num_epochs = 20
-    image_size = 300
+    num_epochs = 12
+    image_size = 512
     verbose = 1
     verbose_step = 1
     num_folds = 5
@@ -51,6 +51,6 @@ class GlobalConfig:
     TEST_PATH = '../../test'
 
     model = 'effnet'
-    model_name = 'tf_efficientnet_b3'
+    model_name = 'tf_efficientnet_b4'
     drop_rate = 0.0
     pretrained = True
