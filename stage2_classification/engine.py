@@ -46,7 +46,7 @@ class Fitter:
             train_loss = self.train_one_epoch(train_loader)
             self.logger.info("[RESULTS] Train Epoch: {} | Train Loss: {}".format(self.epoch, train_loss))
             valid_loss, auc_roc, val_pred = self.validate_one_epoch(valid_loader)
-            self.logger.info("[RESULTS] Validation Epoch: {} | Valid Loss: {} | AUC: {.3f}".format(self.epoch, valid_loss, auc_roc))
+            self.logger.info("[RESULTS] Validation Epoch: {} | Valid Loss: {} | AUC: {:.3f}".format(self.epoch, valid_loss, auc_roc))
 
             self.monitored_metrics = auc_roc
             self.oof = val_pred
