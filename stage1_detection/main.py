@@ -91,14 +91,36 @@ if __name__ == '__main__':
     logger.write("Downloading pretrained weights: {}\n".format(config.pretrained_model))
     wget.download(config.pretrained_model, config.model_path)
 
-    ## Training
-    cfg.total_epochs = config.num_epochs
-    cfg.runner.max_epochs = config.num_epochs
-    cfg.load_from = config.model_path
-    cfg.work_dir = config.output_path
+    ## Edit configuration settings
+    cfg.classes = ("Aortic enlargement", "Atelectasis", "Calcification", "Cardiomegaly", "Consolidation", "ILD", "Infiltration", "Lung Opacity", "Nodule/Mass", "Other lesion", "Pleural effusion", "Pleural thickening", "Pneumothorax", "Pulmonary fibrosis")
+    cfg.data.train.classes = cfg.classes
+    cfg.data.val.classes = cfg.classes
+    cfg.data.test.classes = cfg.classes
+
+    cfg.data_root = 'train'
+    cfg.data.train.img_prefix = cfg.data_root
+    cfg.data.val.img_prefix = cfg.data_root
+    cfg.data.test.img_prefix = cfg.data_root
     cfg.data.train.ann_file = '../../data/datacoco/annotations_1024/instances_train2020.json'
     cfg.data.val.ann_file = '../../data/datacoco/annotations_1024/instances_val2020.json'
     cfg.data.test.ann_file = '../../data/datacoco/annotations_1024/instances_test2020.json'
+
+    cfg.model.bbox_head.num_classes = 14
+
+    cfg.data.samples_per_gpu = 4
+    cfg.optimizer.lr = 0.0025
+    cfg.evaluation.interval = 2
+    cfg.checkpoint_config.interval = 2
+    cfg.gpu_ids = range(1)
+    cfg.seed = 0
+    cfg.total_epochs = config.num_epochs
+    cfg.runner.max_epochs = config.num_epochs
+
+    cfg.load_from = config.model_path
+    cfg.work_dir = config.output_path
+    cfg.work_dir = config.output_path
+    
+    #Train
     logger.write('Begin training... \n')
     detector_train(cfg)
 
