@@ -66,14 +66,15 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='VinBigData_test')
     parser.add_argument('--image-size', type=int, required=True, help='image size used for training')
     parser.add_argument('--file-type', type=str, required=True, help='image extension name')
-    parser.add_argument('--save-path', type=str, default='data', help='saved path')
+    parser.add_argument('--fold-num', type=int, default=5, help='number of training folds')
+    parser.add_argument('--save-path', type=str, default='datacoco', help='saved path')
     args = parser.parse_args()
 
     print(args)
     #read test data
-    csv_file = 'data/sample_submission.csv'
+    csv_file = '../data/csv/sample_submission.csv'
     image_dir = ''
-    saved_coco_path = args.save_path
+    saved_coco_path = '../data/' + args.save_path
 
     total_img = []
     test_rows = pd.read_csv(csv_file, header=None, skiprows=1).values
@@ -81,8 +82,11 @@ if __name__ == '__main__':
         test_img = row[0].split(os.sep)[-1] #image_id
         total_img.append(test_img)
 
-    #Convert test csv to json
-    print('Converting Testset...')
-    l2c_test = Csv2Coco(img_dir=image_dir, total_img=total_img, arg=args)
-    test_instance = l2c_test.to_coco()
-    l2c_test.save_coco_json(test_instance, '%scoco/annotations_%s/instances_test2020.json'%(saved_coco_path,args.image_size))
+    for fold in range(args.fold_num):
+        print('Fold {}...'.format(fold))
+        annot_path = os.path.join(saved_coco_path, 'annotation_{}_{}'.format(args.image_size, fold))
+        #Convert test csv to json
+        print('Converting Testset...')
+        l2c_test = Csv2Coco(img_dir=image_dir, total_img=total_img, arg=args)
+        test_instance = l2c_test.to_coco()
+        l2c_test.save_coco_json(test_instance,  os.path.join(annot_path, 'instances_test2020.json'))
