@@ -9,6 +9,9 @@ class GlobalConfig:
     num_folds = 5
     train_one_fold = False
 
+    cutmix = True
+    cmix_params = {'alpha': 1}
+
     # unpack the key dict
     scheduler = 'CosineAnnealingWarmRestarts'
     scheduler_params = {'StepLR': {'step_size':2, 'gamma':0.3, 'last_epoch':-1, 'verbose':True},
@@ -40,7 +43,7 @@ class GlobalConfig:
     criterion_params = {'crossentropy': {'weight':None,'size_average':None,
                                              'ignore_index':-100,'reduce':None,
                                              'reduction':'mean'},
-                        'labelsmoothloss': {'num_class':2, 'smoothing':0.3, 'dim':-1},}
+                        'labelsmoothloss': {'num_class':2, 'smoothing':0.15, 'dim':-1},}
 
     IMAGE_COL = 'image_id'
     TARGET_COL = 'label'

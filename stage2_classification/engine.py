@@ -10,7 +10,7 @@ import sklearn
 from sklearn.metrics import roc_auc_score
 
 from loss import loss_fn
-from commons import Meter
+from commons import Meter, cutmix
 
 
 class Fitter:
@@ -79,8 +79,16 @@ class Fitter:
             img, labels = img.to(self.device), labels.to(self.device)
             batch_size = labels.shape[0]
 
+            mix_decision = np.random.rand()
+            if mix_decision<0.3 and self.config.cutmix and self.epoch>2:
+                img, labels =cutmix(img, labels, self.config.cmix_params['alpha'])
+
             logits = self.model(img)
-            loss = self.loss(logits, labels.unsqueeze(1).float())
+            if mix_decision<0.3 and self.config.cutmix and self.epoch>2:
+                loss = self.loss(logits, labels[0].unsqueeze(1))*labels[2] \
+                    + self.loss(logits, labels[1].unsqueeze(1))*(1-labels[2])
+            else:
+                loss = self.loss(logits, labels.unsqueeze(1).float())
             summary_loss.update(loss.item(), batch_size)
             loss.backward()
             self.optimizer.step()
