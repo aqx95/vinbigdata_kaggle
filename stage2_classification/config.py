@@ -9,9 +9,6 @@ class GlobalConfig:
     num_folds = 5
     train_one_fold = False
 
-    cutmix = True
-    cmix_params = {'alpha': 1}
-
     # unpack the key dict
     scheduler = 'CosineAnnealingWarmRestarts'
     scheduler_params = {'StepLR': {'step_size':2, 'gamma':0.3, 'last_epoch':-1, 'verbose':True},
