@@ -81,7 +81,7 @@ class Csv2Coco:
         annotation = {}
         annotation['id'] = self.ann_id
         annotation['image_id'] = path
-        annotation['category_id'] = int(class_to_id[str(label)])
+        annotation['category_id'] = label #int(class_to_id[str(label)])
         annotation['segmentation'] = self._get_seg(points)
         annotation['bbox'] = self._get_box(points)
         annotation['iscrowd'] = 0
@@ -122,11 +122,12 @@ if __name__ == '__main__':
     parser.add_argument('--fold-num', type=int, required=True, help='number of training folds')
     parser.add_argument('--file-type', type=str, required=True, help='image extension name')
     parser.add_argument('--save-path', type=str, default='datacoco', help='saved path')
+    parser.add_argument('--csv-path', type=str, required=True, help='csv path for reading data')
     args = parser.parse_args()
 
     print(args)
     #read preprocessed train data
-    csv_file = '../data/csv/final_train.csv'
+    csv_file = '../data/csv/' + args.csv_path
     image_dir = ''
     saved_coco_path = '../data/' + args.save_path
 
