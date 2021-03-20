@@ -87,7 +87,6 @@ if __name__ == '__main__':
 
     cfg.load_from = config.model_path
     cfg.work_dir = config.output_path
-    cfg.work_dir = config.output_path
 
     #Train
     logger.write('Begin training... \n')
