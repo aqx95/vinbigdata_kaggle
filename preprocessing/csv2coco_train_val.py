@@ -81,7 +81,7 @@ class Csv2Coco:
         annotation = {}
         annotation['id'] = self.ann_id
         annotation['image_id'] = path
-        annotation['category_id'] = label #int(class_to_id[str(label)])
+        annotation['category_id'] = int(class_to_id[str(label)])
         annotation['segmentation'] = self._get_seg(points)
         annotation['bbox'] = self._get_box(points)
         annotation['iscrowd'] = 0
