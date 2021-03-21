@@ -86,7 +86,7 @@ if __name__ == '__main__':
     cfg.runner.max_epochs = config.num_epochs
 
     cfg.load_from = config.model_path
-    cfg.work_dir = config.output_path
+    cfg.work_dir = config.output_path + args.fold_num
 
     #Train
     logger.write('Begin training... \n')
