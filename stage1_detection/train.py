@@ -91,22 +91,5 @@ if __name__ == '__main__':
     #Train
     logger.write('Begin training... \n')
     detector_train(cfg)
-
-    ## Inference
-    cfg.data.test.test_mode=True
-    cfg.data.test.pipeline[0].type='LoadImageFromFile'
-    cfg.model.test_cfg.score_thr = config.score_threshold
-    config_file = cfg
-    checkpoint_file = sorted(glob.glob(os.path.join(config.output_path,'epoch_*.pth')))[-1]
-    logger.write('Read checkpoint at: {}\n'.format(checkpoint_file))
-
-    # build the model from a config file and a checkpoint file
-    model = init_detector(config_file, checkpoint_file, device='cuda:0')
-    model.CLASSES = cfg.classes
-
-    logger.write('Creating submission...\n')
-    submission_file = detector_test(model, config)
-    submission_file.to_csv('submission.csv', index=False)
-    logger.write('Finished!')
-
+    logger.write('Finished training! \n')
     logger.close()
