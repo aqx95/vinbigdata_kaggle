@@ -49,10 +49,15 @@ if __name__ == '__main__':
     logger.write('Using GPU {} \n'.format(torch.cuda.get_device_name(0)))
 
     logger.write('Extracting train and test images...\n')
-    #extract image data
-    with zipfile.ZipFile(config.data_path, 'r') as zip_ref:
-        zip_ref.extractall()
+    if args.image_size:
+        #extract image data
+        with zipfile.ZipFile(config.data_path, 'r') as zip_ref:
+            zip_ref.extractall()
+    else:
+        with zipfile.ZipFile('/content/drive/Shareddrives/Deep Learning/vinbigdata-competition-jpg-data-2x-downsampled.zip', 'r') as zip_ref:
+            zip_ref.extractall()
     logger.write('Extracting images DONE!\n')
+
 
     logger.write("Reading config from: {}\n".format(config.config_file))
     cfg = Config.fromfile(config.config_file)
