@@ -71,7 +71,7 @@ if __name__ == '__main__':
     cfg.data.val.classes = cfg.classes
     cfg.data.test.classes = cfg.classes
 
-    cfg.data_root = 'train'
+    cfg.data_root = '../../../train'
     cfg.data.train.img_prefix = cfg.data_root
     cfg.data.val.img_prefix = cfg.data_root
     cfg.data.test.img_prefix = cfg.data_root
