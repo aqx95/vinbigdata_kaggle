@@ -37,11 +37,11 @@ class Csv2Coco:
     def to_coco(self, keys):
         self._init_categories()
         for key in keys:
-            self.images.append(self._image(key))
             shapes = self.total_annot[key]
+            self.images.append(self._image(key, shapes[0]))
             for shape in shapes:
                 bboxi = []
-                for cor in shape[-4:]:
+                for cor in shape[-7:-3]:
                     bboxi.append(int(float(cor)))
                 label = shape[0]
                 annotation = self._annotation(bboxi,label,key)
@@ -65,12 +65,12 @@ class Csv2Coco:
             self.categories.append(category)
 
     # 'images' field
-    def _image(self, path):
+    def _image(self, path, shape):
         image = {}
         #print(path)
-        img = cv2.imread(self.image_dir + path + '.' + self.arg.file_type)
-        image['height'] = img.shape[0]#self.arg.image_size
-        image['width'] = img.shape[1]#self.arg.image_size
+        #img = cv2.imread(self.image_dir + path + '.' + self.arg.file_type)
+        image['height'] = shape[-2]#self.arg.image_size
+        image['width'] = shape[-3]#self.arg.image_size
         image['id'] = path
         image['file_name'] = path + '.' + self.arg.file_type
         return image
@@ -81,7 +81,7 @@ class Csv2Coco:
         annotation = {}
         annotation['id'] = self.ann_id
         annotation['image_id'] = path
-        annotation['category_id'] = int(class_to_id[str(label)])
+        annotation['category_id'] = label #int(class_to_id[str(label)])
         annotation['segmentation'] = self._get_seg(points)
         annotation['bbox'] = self._get_box(points)
         annotation['iscrowd'] = 0
@@ -123,13 +123,12 @@ if __name__ == '__main__':
     parser.add_argument('--file-type', type=str, required=True, help='image extension name')
     parser.add_argument('--save-path', type=str, default='datacoco', help='saved path')
     parser.add_argument('--csv-path', type=str, required=True, help='csv path for reading data')
-    parser.add_argument('--img-dir', type=str, required=True, help='image directory')
     args = parser.parse_args()
 
     print(args)
     #read preprocessed train data
     csv_file = '../data/csv/' + args.csv_path
-    image_dir = args.image_dir
+    image_dir = ''
     saved_coco_path = '../data/' + args.save_path
 
     annotations = pd.read_csv(csv_file)
@@ -147,7 +146,7 @@ if __name__ == '__main__':
 
         for annotation in train_annotation:
             key = annotation[0].split(os.sep)[-1] #image_id
-            value = np.array([annotation[1:-3]]) #remaining col
+            value = np.array([annotation[1:]]) #remaining col
             if key in total_train_annotations.keys():
                 total_train_annotations[key] = np.concatenate((total_train_annotations[key], value), axis=0)
             else:
@@ -156,7 +155,7 @@ if __name__ == '__main__':
 
         for annotation in val_annotation:
             key = annotation[0].split(os.sep)[-1] #image_id
-            value = np.array([annotation[1:-3]]) #remaining col
+            value = np.array([annotation[1:]]) #remaining col
             if key in total_val_annotations.keys():
                 total_val_annotations[key] = np.concatenate((total_val_annotations[key], value), axis=0)
             else:

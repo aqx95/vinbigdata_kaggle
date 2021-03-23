@@ -20,23 +20,24 @@ classname_to_id = {'Aortic enlargement':0, 'Atelectasis':1, 'Calcification':2, '
                }
 
 class Csv2Coco:
-    def __init__(self, img_dir, total_img, arg):
+    def __init__(self, img_dir, total_annot, arg):
         self.images = []
         self.annotations = []
         self.categories = []
         self.img_id = 0
         self.ann_id = 0
         self.img_dir = img_dir
-        self.total_img = total_img
+        self.total_annot = total_annot
         self.arg = arg
 
     def save_coco_json(self, instance, save_path):
         json.dump(instance, open(save_path,'w'), ensure_ascii=False, indent=2)
 
-    def to_coco(self):
+    def to_coco(self, keys):
         self._init_categories()
-        for key in self.total_img:
-            self.images.append(self._image(key))
+        for key in keys:
+            shape = self.total_annot[key]
+            self.images.append(self._image(key, shape))
             self.img_id += 1
         instance = {}
         instance['info'] = 'AQX'
@@ -53,10 +54,10 @@ class Csv2Coco:
             categories['name'] = k
             self.categories.append(categories)
 
-    def _image(self, path):
+    def _image(self, path, shape):
         image = {}
-        image['height'] = self.arg.image_size
-        image['width'] = self.arg.image_size
+        image['height'] = int(shape[1])#self.arg.image_size
+        image['width'] = int(shape[0])#self.arg.image_size
         image['id'] = path
         image['file_name'] = path + '.' + self.arg.file_type
         return image
@@ -72,21 +73,24 @@ if __name__ == '__main__':
 
     print(args)
     #read test data
-    csv_file = '../data/csv/sample_submission.csv'
+    csv_file = '../data/csv/test_downsampled.csv'
     image_dir = ''
     saved_coco_path = '../data/' + args.save_path
 
-    total_img = []
+    total_annotation = {}
     test_rows = pd.read_csv(csv_file, header=None, skiprows=1).values
     for row in test_rows:
-        test_img = row[0].split(os.sep)[-1] #image_id
-        total_img.append(test_img)
+        test_key = row[0].split(os.sep)[-1] #image_id
+        value = np.array(row[1:])
+        total_annotation[test_key] = value
+    test_keys = list(total_annotation.keys())
+    print('Number of test: {}'.format(len(test_keys)))
 
     for fold in range(args.fold_num):
         print('Fold {}...'.format(fold))
         annot_path = os.path.join(saved_coco_path, 'annotation_{}_{}'.format(args.image_size, fold))
         #Convert test csv to json
         print('Converting Testset...')
-        l2c_test = Csv2Coco(img_dir=image_dir, total_img=total_img, arg=args)
-        test_instance = l2c_test.to_coco()
+        l2c_test = Csv2Coco(img_dir=image_dir, total_annot=total_annotation, arg=args)
+        test_instance = l2c_test.to_coco(test_keys)
         l2c_test.save_coco_json(test_instance,  os.path.join(annot_path, 'instances_test2020.json'))
