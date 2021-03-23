@@ -48,17 +48,6 @@ if __name__ == '__main__':
     logger = open(os.path.join(config.log_path, 'log.txt'), 'a')
     logger.write('Using GPU {} \n'.format(torch.cuda.get_device_name(0)))
 
-    logger.write('Extracting train and test images...\n')
-    if args.image_size:
-        #extract image data
-        with zipfile.ZipFile(config.data_path, 'r') as zip_ref:
-            zip_ref.extractall()
-    else:
-        with zipfile.ZipFile('/content/drive/Shareddrives/Deep Learning/vinbigdata-competition-jpg-data-2x-downsampled.zip', 'r') as zip_ref:
-            zip_ref.extractall()
-    logger.write('Extracting images DONE!\n')
-
-
     logger.write("Reading config from: {}\n".format(config.config_file))
     cfg = Config.fromfile(config.config_file)
     config.model_path = os.path.join(config.checkpoint_path, config.pretrained_model.split('/')[-1])
@@ -66,20 +55,20 @@ if __name__ == '__main__':
     wget.download(config.pretrained_model, config.model_path)
 
     ## Edit configuration settings
-    cfg.classes = ("Aortic enlargement", "Atelectasis", "Calcification", "Cardiomegaly", "Consolidation", "ILD", "Infiltration", "Lung Opacity", "Nodule/Mass", "Other lesion", "Pleural effusion", "Pleural thickening", "Pneumothorax", "Pulmonary fibrosis")
+    cfg.classes = ("Aortic enlargement", "Atelectasis", "Calcification", "Cardiomegaly", "Consolidation", "ILD", "Infiltration", "Lung Opacity", "Nodule/Mass", "Other lesion", "Pleural effusion", "Pleural thickening", "Pneumothorax", "Pulmonary fibrosis", "No finding")
     cfg.data.train.classes = cfg.classes
     cfg.data.val.classes = cfg.classes
     cfg.data.test.classes = cfg.classes
 
-    cfg.data_root = '../../../train'
+    cfg.data_root = '../../../train/train'
     cfg.data.train.img_prefix = cfg.data_root
     cfg.data.val.img_prefix = cfg.data_root
     cfg.data.test.img_prefix = cfg.data_root
-    cfg.data.train.ann_file = '../../data/datacoco/annotation_1024_{}/instances_train2020.json'.format(args.fold_num)
-    cfg.data.val.ann_file = '../../data/datacoco/annotation_1024_{}/instances_val2020.json'.format(args.fold_num)
-    cfg.data.test.ann_file = '../../data/datacoco/annotation_1024_{}/instances_test2020.json'.format(args.fold_num)
+    cfg.data.train.ann_file = '../../data/datacoco/annotation_0_{}/instances_train2020.json'.format(args.fold_num)
+    cfg.data.val.ann_file = '../../data/datacoco/annotation_0_{}/instances_val2020.json'.format(args.fold_num)
+    cfg.data.test.ann_file = '../../data/datacoco/annotation_0_{}/instances_test2020.json'.format(args.fold_num)
 
-    cfg.model.bbox_head.num_classes = 14
+    cfg.model.bbox_head.num_classes = 15
 
     cfg.data.samples_per_gpu = 4
     cfg.optimizer.lr = 0.0025
