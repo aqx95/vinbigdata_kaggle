@@ -15,7 +15,7 @@ import shutil
 class_to_id = {'Aortic enlargement':0, 'Atelectasis':1, 'Calcification':2, 'Cardiomegaly':3,
     		   	   'Consolidation':4, 'ILD':5, 'Infiltration':6, 'Lung Opacity':7, 'Nodule/Mass':8,
                	   'Other lesion':9, 'Pleural effusion':10, 'Pleural thickening':11, 'Pneumothorax':12,
-               	   'Pulmonary fibrosis':13
+               	   'Pulmonary fibrosis':13, 'No finding':14
                }
 
 
@@ -68,9 +68,9 @@ class Csv2Coco:
     def _image(self, path):
         image = {}
         #print(path)
-        #img = cv2.imread(self.image_dir + path + '.jpg')
-        image['height'] = self.arg.image_size
-        image['width'] = self.arg.image_size
+        img = cv2.imread(self.image_dir + path + '.' + self.arg.file_type)
+        image['height'] = img.shape[0]#self.arg.image_size
+        image['width'] = img.shape[1]#self.arg.image_size
         image['id'] = path
         image['file_name'] = path + '.' + self.arg.file_type
         return image
@@ -123,18 +123,20 @@ if __name__ == '__main__':
     parser.add_argument('--file-type', type=str, required=True, help='image extension name')
     parser.add_argument('--save-path', type=str, default='datacoco', help='saved path')
     parser.add_argument('--csv-path', type=str, required=True, help='csv path for reading data')
+    parser.add_argument('--img-dir', type=str, required=True, help='image directory')
     args = parser.parse_args()
 
     print(args)
     #read preprocessed train data
     csv_file = '../data/csv/' + args.csv_path
-    image_dir = ''
+    image_dir = args.image_dir
     saved_coco_path = '../data/' + args.save_path
 
     annotations = pd.read_csv(csv_file)
     #rescale to training image size
-    annotations[['x_min','x_max']] = annotations[['x_min','x_max']].apply(lambda x:round(x*args.image_size,1))
-    annotations[['y_min','y_max']] = annotations[['y_min','y_max']].apply(lambda x:round(x*args.image_size,1))
+    if args.csv_path != 'train_downsampled_fold.csv':
+        annotations[['x_min','x_max']] = annotations[['x_min','x_max']].apply(lambda x:round(x*args.image_size,1))
+        annotations[['y_min','y_max']] = annotations[['y_min','y_max']].apply(lambda x:round(x*args.image_size,1))
 
     for fold in range(args.fold_num):
         print('Fold {}...'.format(fold))
