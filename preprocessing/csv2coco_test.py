@@ -73,7 +73,7 @@ if __name__ == '__main__':
 
     print(args)
     #read test data
-    csv_file = '../data/csv/test_downsampled.csv'
+    csv_file = '../data/csv/test.csv'
     image_dir = ''
     saved_coco_path = '../data/' + args.save_path
 

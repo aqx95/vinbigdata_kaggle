@@ -15,8 +15,7 @@ import shutil
 class_to_id = {'Aortic enlargement':0, 'Atelectasis':1, 'Calcification':2, 'Cardiomegaly':3,
     		   	   'Consolidation':4, 'ILD':5, 'Infiltration':6, 'Lung Opacity':7, 'Nodule/Mass':8,
                	   'Other lesion':9, 'Pleural effusion':10, 'Pleural thickening':11, 'Pneumothorax':12,
-               	   'Pulmonary fibrosis':13, 'No finding':14
-               }
+               	   'Pulmonary fibrosis':13}
 
 
 class Csv2Coco:
