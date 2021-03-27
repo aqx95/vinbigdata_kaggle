@@ -55,20 +55,22 @@ if __name__ == '__main__':
     wget.download(config.pretrained_model, config.model_path)
 
     ## Edit configuration settings
-    cfg.classes = ("Aortic enlargement", "Atelectasis", "Calcification", "Cardiomegaly", "Consolidation", "ILD", "Infiltration", "Lung Opacity", "Nodule/Mass", "Other lesion", "Pleural effusion", "Pleural thickening", "Pneumothorax", "Pulmonary fibrosis", "No finding")
+    cfg.classes = ("Aortic enlargement", "Atelectasis", "Calcification", "Cardiomegaly",
+                   "Consolidation", "ILD", "Infiltration", "Lung Opacity", "Nodule/Mass",
+                   "Other lesion", "Pleural effusion", "Pleural thickening", "Pneumothorax", "Pulmonary fibrosis")
     cfg.data.train.classes = cfg.classes
     cfg.data.val.classes = cfg.classes
     cfg.data.test.classes = cfg.classes
 
-    cfg.data_root = '../../../train/train'
+    cfg.data_root = '../../../vinbigdata/train'
     cfg.data.train.img_prefix = cfg.data_root
     cfg.data.val.img_prefix = cfg.data_root
     cfg.data.test.img_prefix = cfg.data_root
-    cfg.data.train.ann_file = '../../data/datacoco/annotation_0_{}/instances_train2020.json'.format(args.fold_num)
-    cfg.data.val.ann_file = '../../data/datacoco/annotation_0_{}/instances_val2020.json'.format(args.fold_num)
-    cfg.data.test.ann_file = '../../data/datacoco/annotation_0_{}/instances_test2020.json'.format(args.fold_num)
+    cfg.data.train.ann_file = '../../data/datacoco/annotation_1_{}/instances_train2020.json'.format(args.fold_num)
+    cfg.data.val.ann_file = '../../data/datacoco/annotation_1_{}/instances_val2020.json'.format(args.fold_num)
+    cfg.data.test.ann_file = '../../data/datacoco/annotation_1_{}/instances_test2020.json'.format(args.fold_num)
 
-    cfg.model.bbox_head.num_classes = 15
+    cfg.model.bbox_head.num_classes = 14
 
     cfg.data.samples_per_gpu = 4
     cfg.optimizer.lr = 0.0025
