@@ -62,13 +62,13 @@ if __name__ == '__main__':
     cfg.data.val.classes = cfg.classes
     cfg.data.test.classes = cfg.classes
 
-    cfg.data_root = '../../../vinbigdata/train'
+    cfg.data_root = '../../../train'
     cfg.data.train.img_prefix = cfg.data_root
     cfg.data.val.img_prefix = cfg.data_root
     cfg.data.test.img_prefix = cfg.data_root
-    cfg.data.train.ann_file = '../../data/datacoco/annotation_1_{}/instances_train2020.json'.format(args.fold_num)
-    cfg.data.val.ann_file = '../../data/datacoco/annotation_1_{}/instances_val2020.json'.format(args.fold_num)
-    cfg.data.test.ann_file = '../../data/datacoco/annotation_1_{}/instances_test2020.json'.format(args.fold_num)
+    cfg.data.train.ann_file = '../../data/datacoco/annotation_1024_{}/instances_train2020.json'.format(args.fold_num)
+    cfg.data.val.ann_file = '../../data/datacoco/annotation_1024_{}/instances_val2020.json'.format(args.fold_num)
+    cfg.data.test.ann_file = '../../data/datacoco/annotation_1024_{}/instances_test2020.json'.format(args.fold_num)
 
     cfg.model.bbox_head.num_classes = 14
 
