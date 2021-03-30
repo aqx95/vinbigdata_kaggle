@@ -68,8 +68,8 @@ class Csv2Coco:
         image = {}
         #print(path)
         #img = cv2.imread(self.image_dir + path + '.' + self.arg.file_type)
-        image['height'] = shape[-2]#self.arg.image_size
-        image['width'] = shape[-3]#self.arg.image_size
+        image['height'] = self.arg.image_size #shape[-2]
+        image['width'] = self.arg.image_size #shape[-3]
         image['id'] = path
         image['file_name'] = path + '.' + self.arg.file_type
         return image

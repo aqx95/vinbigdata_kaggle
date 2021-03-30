@@ -56,8 +56,8 @@ class Csv2Coco:
 
     def _image(self, path, shape):
         image = {}
-        image['height'] = int(shape[1])#self.arg.image_size
-        image['width'] = int(shape[0])#self.arg.image_size
+        image['height'] = self.arg.image_size  #int(shape[1])
+        image['width'] = self.arg.image_size  #int(shape[0])
         image['id'] = path
         image['file_name'] = path + '.' + self.arg.file_type
         return image
