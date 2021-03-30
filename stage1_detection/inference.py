@@ -17,38 +17,28 @@ from mmdet.apis import init_detector, inference_detector, show_result_pyplot
 
 def detector_test(model, config):
     ## CSV reference
-    #test_meta = pd.read_csv(os.path.join(config.csv_path, 'test.csv'))
+    test_meta = pd.read_csv(os.path.join(config.csv_path, 'test.csv'))
     sub = pd.read_csv(os.path.join(config.csv_path, 'sample_submission.csv'))
     # Loop imag for test
     for idx, row in tqdm(sub.iterrows(), total=len(sub), position=0, leave=True):
         img_id = row['image_id']
-        #meta = test_meta[test_meta['image_id']==img_id]
-        #orig_h, orig_w = meta['height'].item(), meta['width'].item()
-        #h_ratio, w_ratio = orig_h/1024, orig_w/1024
+        meta = test_meta[test_meta['image_id']==img_id]
+        orig_h, orig_w = meta['height'].item(), meta['width'].item()
+        h_ratio, w_ratio = orig_h/1024, orig_w/1024
 
-        img = mmcv.imread('../../../vinbigdata/test/'+img_id+'.jpg')
+        img = mmcv.imread('../../../test/'+img_id+'.png')
         result = inference_detector(model, img)
         string = ""
         for class_, class_array in enumerate(result):
             if class_array.shape[0]:
               class_array = class_array.tolist()
               for array in class_array:
-                  # array[0] = array[0] * 2#w_ratio
-                  # array[1] = array[1] * 2#h_ratio
-                  # array[2] = array[2] * 2#w_ratio
-                  # array[3] = array[3] * 2#h_ratio
+                  array[0] = array[0] * w_ratio
+                  array[1] = array[1] * h_ratio
+                  array[2] = array[2] * w_ratio
+                  array[3] = array[3] * h_ratio
                   string += '{} {:.2f} {} {} {} {} '.format(int(class_), array[4], int(array[0]), int(array[1]), int(array[2]), int(array[3]))
 
-            # if class_ == 14:
-            #   for array in class_array:
-            #       if array[4] > 0.90: #high confidence of healthy sample
-            #         string = '14 1 0 0 1 1'
-            #         break
-            #       elif array[4] < 0.08:
-            #         continue
-            #       else:
-            #         string += '14 {:.2f} 0 0 1 1 '.format(array[4])
-            #         break
         if len(string) == 0:
             string += "14 1 0 0 1 1"
 
@@ -87,13 +77,13 @@ if __name__ == '__main__':
     cfg.data.val.classes = cfg.classes
     cfg.data.test.classes = cfg.classes
 
-    cfg.data_root = '../../../vinbigdata/test'
+    cfg.data_root = '../../../test'
     cfg.data.train.img_prefix = cfg.data_root
     cfg.data.val.img_prefix = cfg.data_root
     cfg.data.test.img_prefix = cfg.data_root
-    cfg.data.train.ann_file = '../../data/datacoco/annotation_1_{}/instances_train2020.json'.format(args.fold_num)
-    cfg.data.val.ann_file = '../../data/datacoco/annotation_1_{}/instances_val2020.json'.format(args.fold_num)
-    cfg.data.test.ann_file = '../../data/datacoco/annotation_1_{}/instances_test2020.json'.format(args.fold_num)
+    cfg.data.train.ann_file = '../../data/datacoco/annotation_1024_{}/instances_train2020.json'.format(args.fold_num)
+    cfg.data.val.ann_file = '../../data/datacoco/annotation_1024_{}/instances_val2020.json'.format(args.fold_num)
+    cfg.data.test.ann_file = '../../data/datacoco/annotation_1024_{}/instances_test2020.json'.format(args.fold_num)
 
     cfg.model.bbox_head.num_classes = 14
 
