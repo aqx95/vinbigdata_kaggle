@@ -37,7 +37,7 @@ class Csv2Coco:
         self._init_categories()
         for key in keys:
             shape = self.total_annot[key]
-            self.images.append(self._image(key, shape))
+            self.images.append(self._image(key))
             self.img_id += 1
         instance = {}
         instance['info'] = 'AQX'
@@ -54,10 +54,10 @@ class Csv2Coco:
             categories['name'] = k
             self.categories.append(categories)
 
-    def _image(self, path, shape):
+    def _image(self, path):
         image = {}
-        image['height'] = self.arg.image_size  #int(shape[1])
-        image['width'] = self.arg.image_size  #int(shape[0])
+        image['height'] = self.arg.image_size
+        image['width'] = self.arg.image_size
         image['id'] = path
         image['file_name'] = path + '.' + self.arg.file_type
         return image
@@ -65,8 +65,8 @@ class Csv2Coco:
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='VinBigData_test')
-    parser.add_argument('--image-size', type=int, required=True, help='image size used for training')
-    parser.add_argument('--file-type', type=str, required=True, help='image extension name')
+    parser.add_argument('--image-size', type=int, default=1024, help='image size used for training')
+    parser.add_argument('--file-type', type=str, default='png', help='image extension name')
     parser.add_argument('--fold-num', type=int, default=5, help='number of training folds')
     parser.add_argument('--save-path', type=str, default='datacoco', help='saved path')
     args = parser.parse_args()
@@ -88,9 +88,9 @@ if __name__ == '__main__':
 
     for fold in range(args.fold_num):
         print('Fold {}...'.format(fold))
-        annot_path = os.path.join(saved_coco_path, 'annotation_{}_{}'.format(args.image_size, fold))
+        annot_path = os.path.join(saved_coco_path, 'annotation_fold{}_{}'.format(fold, args.image_size))
         #Convert test csv to json
         print('Converting Testset...')
         l2c_test = Csv2Coco(img_dir=image_dir, total_annot=total_annotation, arg=args)
         test_instance = l2c_test.to_coco(test_keys)
-        l2c_test.save_coco_json(test_instance,  os.path.join(annot_path, 'instances_test2020.json'))
+        l2c_test.save_coco_json(test_instance,  os.path.join(annot_path, 'instances_test.json'))
