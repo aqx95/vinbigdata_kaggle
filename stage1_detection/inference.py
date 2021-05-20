@@ -6,6 +6,8 @@ import torch
 import argparse
 import pandas as pd
 from tqdm import tqdm
+
+from utils import overwrite_base, Logger
 from config import GlobalConfig
 
 import mmcv
@@ -52,69 +54,33 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='vinbigdata')
     parser.add_argument('--checkpoint-path', type=str, required=True,
                         help='checkpoint path for loading weights')
-    parser.add_argument('--num-epochs', type=int, required=True,
-                        help='number of training epoch')
-    parser.add_argument('--fold-num', type=int, required=True,
+    parser.add_argument('--fold-num', type=int, default=0,
                         help='fold number for training')
     args = parser.parse_args()
 
     os.chdir('mmdetection')
-
-    #overwrite
     config = GlobalConfig
-    config.num_epochs = args.num_epochs
+    config.fold_num = args.fold_num
 
-    logger = open(os.path.join(config.log_path, 'infer_log.txt'), 'a')
-
+    logger = Logger(config)
     logger.write("Reading config from: {}\n".format(config.config_file))
-    cfg = Config.fromfile(config.config_file)
+    base_cfg = Config.fromfile(config.config_file)
 
     ## Edit configuration settings
-    cfg.classes = ("Aortic enlargement", "Atelectasis", "Calcification", "Cardiomegaly",
-                   "Consolidation", "ILD", "Infiltration", "Lung Opacity", "Nodule/Mass",
-                   "Other lesion", "Pleural effusion", "Pleural thickening", "Pneumothorax", "Pulmonary fibrosis")
-    cfg.data.train.classes = cfg.classes
-    cfg.data.val.classes = cfg.classes
-    cfg.data.test.classes = cfg.classes
-
-    cfg.data_root = '../../../test'
-    cfg.data.train.img_prefix = cfg.data_root
-    cfg.data.val.img_prefix = cfg.data_root
-    cfg.data.test.img_prefix = cfg.data_root
-    cfg.data.train.ann_file = '../../data/datacoco/annotation_1024_{}/instances_train2020.json'.format(args.fold_num)
-    cfg.data.val.ann_file = '../../data/datacoco/annotation_1024_{}/instances_val2020.json'.format(args.fold_num)
-    cfg.data.test.ann_file = '../../data/datacoco/annotation_1024_{}/instances_test2020.json'.format(args.fold_num)
-
-    cfg.model.bbox_head.num_classes = 14
-
-    cfg.data.samples_per_gpu = 4
-    cfg.optimizer.lr = 0.0025
-    cfg.evaluation.interval = 2
-    cfg.checkpoint_config.interval = 2
-    cfg.gpu_ids = range(1)
-    cfg.seed = 0
-    cfg.total_epochs = config.num_epochs
-    cfg.runner.max_epochs = config.num_epochs
-
-    cfg.load_from = config.model_path
-    cfg.work_dir = config.output_path
-
+    model_config = overwrite_base(base_cfg, config, is_train=False)
 
     ## Inference
-    cfg.data.test.test_mode=True
-    cfg.data.test.pipeline[0].type='LoadImageFromFile'
-    cfg.model.test_cfg.score_thr = config.score_threshold
-    config_file = cfg
+    config_file = model_config
     checkpoint_file = args.checkpoint_path
     logger.write('Read checkpoint at: {}\n'.format(checkpoint_file))
 
     # build the model from a config file and a checkpoint file
     model = init_detector(config_file, checkpoint_file, device='cuda:0')
-    model.CLASSES = cfg.classes
+    model.CLASSES = config_file.classes
 
     logger.write('Creating submission...\n')
     submission_file = detector_test(model, config)
-    submission_file.to_csv('submission.csv', index=False)
+    submission_file.to_csv('../submission.csv', index=False)
     logger.write('Finished!')
 
     logger.close()
