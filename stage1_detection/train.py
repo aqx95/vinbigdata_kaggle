@@ -6,6 +6,8 @@ import torch
 import argparse
 import pandas as pd
 from tqdm import tqdm
+
+from utils import overwrite_base, Logger
 from config import GlobalConfig
 
 import mmcv
@@ -35,57 +37,36 @@ if __name__ == '__main__':
 
     os.chdir('mmdetection')
 
-    #overwrite
+    #Overwrite
     config = GlobalConfig
     config.num_epochs = args.num_epochs
     config.image_size = args.image_size
+    config.fold_num = args.fold_num
 
     if not os.path.exists(config.log_path):
         os.makedirs(config.log_path)
-    if not os.path.exists(config.checkpoint_path):
-      os.makedirs(config.checkpoint_path)
 
-    logger = open(os.path.join(config.log_path, 'log.txt'), 'a')
+    #Init logger
+    logger = Logger(config)
     logger.write('Using GPU {} \n'.format(torch.cuda.get_device_name(0)))
 
-    logger.write("Reading config from: {}\n".format(config.config_file))
-    cfg = Config.fromfile(config.config_file)
-    config.model_path = os.path.join(config.checkpoint_path, config.pretrained_model.split('/')[-1])
-    logger.write("Downloading pretrained weights: {}\n".format(config.pretrained_model))
-    wget.download(config.pretrained_model, config.model_path)
+    #Read base config file
+    logger.write("Reading config from: {}".format(config.config_file))
+    base_cfg = Config.fromfile(config.config_file)
+    #Download pretrained model
+    config.model_path = os.path.join(config.pretrain_store_path, config.pretrain_url.split('/')[-1])
+    if not os.path.exists(config.pretrain_store_path):
+      os.makedirs(config.pretrain_store_path)
+      logger.write("Downloading pretrained weights: {}\n".format(config.pretrain_url))
+      wget.download(config.pretrain_url, config.model_path)
+    else:
+      logger.write("Pretrained model already in cache \n")
 
-    ## Edit configuration settings
-    cfg.classes = ("Aortic enlargement", "Atelectasis", "Calcification", "Cardiomegaly",
-                   "Consolidation", "ILD", "Infiltration", "Lung Opacity", "Nodule/Mass",
-                   "Other lesion", "Pleural effusion", "Pleural thickening", "Pneumothorax", "Pulmonary fibrosis")
-    cfg.data.train.classes = cfg.classes
-    cfg.data.val.classes = cfg.classes
-    cfg.data.test.classes = cfg.classes
-
-    cfg.data_root = '../../../train'
-    cfg.data.train.img_prefix = cfg.data_root
-    cfg.data.val.img_prefix = cfg.data_root
-    cfg.data.test.img_prefix = cfg.data_root
-    cfg.data.train.ann_file = '../../data/datacoco/annotation_fold{}_1024/instances_train.json'.format(args.fold_num)
-    cfg.data.val.ann_file = '../../data/datacoco/annotation_fold{}_1024/instances_val.json'.format(args.fold_num)
-    cfg.data.test.ann_file = '../../data/datacoco/annotation_fold{}_1024/instances_test.json'.format(args.fold_num)
-
-    cfg.model.bbox_head.num_classes = 14
-
-    cfg.data.samples_per_gpu = 4
-    cfg.optimizer.lr = 0.0025
-    cfg.evaluation.interval = 2
-    cfg.checkpoint_config.interval = 2
-    cfg.gpu_ids = range(1)
-    cfg.seed = 0
-    cfg.total_epochs = config.num_epochs
-    cfg.runner.max_epochs = config.num_epochs
-
-    cfg.load_from = config.model_path
-    cfg.work_dir = config.output_path + str(args.fold_num)
+    # Edit configuration settings
+    final_config = overwrite_base(base_cfg, config, is_train=True)
 
     #Train
-    logger.write('Begin training... \n')
-    detector_train(cfg)
-    logger.write('Finished training! \n')
+    logger.write(f'Begin training Fold {config.fold_num}... \n')
+    detector_train(final_config)
+    logger.write(f'Finished training Fold {config.fold_num}! \n')
     logger.close()
