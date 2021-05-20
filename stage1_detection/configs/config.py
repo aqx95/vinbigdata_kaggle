@@ -38,6 +38,7 @@ class GlobalConfig:
     eval_interval = 2
 
     test = {
+        'test_root_path': '../../../test',
         'test_mode': True,
         'pipeline_type': 'LoadImageFromFile',
         'score_thr': 0.15
