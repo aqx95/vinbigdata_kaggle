@@ -31,43 +31,45 @@ def detector_test(model, config):
 
         img = mmcv.imread('../../../test/'+img_id+'.png')
         result = inference_detector(model, img)
-        # string = ""
-        row_result = []
-        for class_, class_array in enumerate(result):
+        string = ""
             if class_array.shape[0]:
-                class_array = class_array.tolist()
-                for array in class_array:
-                    row_result = [img_id]
-                    array[0] = array[0] * w_ratio
-                    array[1] = array[1] * h_ratio
-                    array[2] = array[2] * w_ratio
-                    array[3] = array[3] * h_ratio
-                    row_result.extend(int(class_), array[4], int(array[0]), int(array[1]), int(array[2]), int(array[3]))
-                    result_list.append(row_result)
-        if len(row_result) == 0:
-            row_result.append([img_id, 14, 1, 0, 0, 1, 1])
+              class_array = class_array.tolist()
+              for array in class_array:
+                  array[0] = array[0] * w_ratio
+                  array[1] = array[1] * h_ratio
+                  array[2] = array[2] * w_ratio
+                  array[3] = array[3] * h_ratio
+                  string += '{} {:.2f} {} {} {} {} '.format(int(class_), array[4], int(array[0]), int(array[1]), int(array[2]), int(array[3]))
 
-    columns = ['image_id', 'class', 'score', 'x_min', 'y_min', 'x_max', 'y_max']
-    results_csv = pd.DataFrame(results_list, columns=columns)
+        if len(string) == 0:
+            string += "14 1 0 0 1 1"
 
-    return results_csv
+        sub.loc[idx, 'PredictionString'] = string
+
+    return sub
+
+    #     row_result = []
+    #     for class_, class_array in enumerate(result):
+    #         if class_array.shape[0]:
+    #             class_array = class_array.tolist()
+    #             for array in class_array:
+    #                 row_result = [img_id]
+    #                 array[0] = array[0] * w_ratio
+    #                 array[1] = array[1] * h_ratio
+    #                 array[2] = array[2] * w_ratio
+    #                 array[3] = array[3] * h_ratio
+    #                 row_result.extend(int(class_), array[4], int(array[0]), int(array[1]), int(array[2]), int(array[3]))
+    #                 result_list.append(row_result)
+    #     if len(row_result) == 0:
+    #         row_result.append([img_id, 14, 1, 0, 0, 1, 1])
+    #
+    # columns = ['image_id', 'class', 'score', 'x_min', 'y_min', 'x_max', 'y_max']
+    # results_csv = pd.DataFrame(results_list, columns=columns)
+    #
+    # return results_csv
 
 
-        #     if class_array.shape[0]:
-        #       class_array = class_array.tolist()
-        #       for array in class_array:
-        #           array[0] = array[0] * w_ratio
-        #           array[1] = array[1] * h_ratio
-        #           array[2] = array[2] * w_ratio
-        #           array[3] = array[3] * h_ratio
-        #           string += '{} {:.2f} {} {} {} {} '.format(int(class_), array[4], int(array[0]), int(array[1]), int(array[2]), int(array[3]))
-        #
-        # if len(string) == 0:
-        #     string += "14 1 0 0 1 1"
-        #
-        # sub.loc[idx, 'PredictionString'] = string
 
-    # return sub
 
 
 #Inference
