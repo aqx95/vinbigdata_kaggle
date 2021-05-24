@@ -148,7 +148,7 @@ def postprocess_fusion(df, fusion_type, iou_thr=0.5, sigma=0.1, skip_box_thr=0.0
 
 
 
-#Ensemble
+#MAIN
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='vinbigdata')
     parser.add_argument('--submission-path', type=str, required=True,
