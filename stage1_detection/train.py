@@ -64,6 +64,8 @@ if __name__ == '__main__':
 
     # Edit configuration settings
     final_config = overwrite_base(base_cfg, config, is_train=True)
+    with open(os.path.join(config.output_path, config.model_name+'.py'), 'w') as f:
+        f.write(final_config.pretty_text)
 
     #Train
     logger.write(f'Begin training Fold {config.fold_num}... \n')
