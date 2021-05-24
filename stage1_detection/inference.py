@@ -29,17 +29,18 @@ def detector_test(model, config):
         orig_h, orig_w = meta['height'].item(), meta['width'].item()
         h_ratio, w_ratio = orig_h/config.image_size, orig_w/config.image_size
 
-        img = mmcv.imread('../../../test/'+img_id+'.png')
+        img = mmcv.imread(os.path.join(config.test['test_root_path'], img_id+'.png'))
         result = inference_detector(model, img)
         string = ""
-            if class_array.shape[0]:
-              class_array = class_array.tolist()
-              for array in class_array:
-                  array[0] = array[0] * w_ratio
-                  array[1] = array[1] * h_ratio
-                  array[2] = array[2] * w_ratio
-                  array[3] = array[3] * h_ratio
-                  string += '{} {:.2f} {} {} {} {} '.format(int(class_), array[4], int(array[0]), int(array[1]), int(array[2]), int(array[3]))
+        for class_, class_array in enumerate(result):
+          if class_array.shape[0]:
+            class_array = class_array.tolist()
+            for array in class_array:
+                array[0] = array[0] * w_ratio
+                array[1] = array[1] * h_ratio
+                array[2] = array[2] * w_ratio
+                array[3] = array[3] * h_ratio
+                string += '{} {:.2f} {} {} {} {} '.format(int(class_), array[4], int(array[0]), int(array[1]), int(array[2]), int(array[3]))
 
         if len(string) == 0:
             string += "14 1 0 0 1 1"
@@ -67,8 +68,6 @@ def detector_test(model, config):
     # results_csv = pd.DataFrame(results_list, columns=columns)
     #
     # return results_csv
-
-
 
 
 
