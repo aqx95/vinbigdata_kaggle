@@ -14,7 +14,7 @@ class GlobalConfig:
     output_path = '../vinbig_output'
     log_path = '../logs'
     pretrain_store_path = '../checkpoint'
-
+    config_path = '../configs'
 
     ### Overwrite model configuration
     # Data

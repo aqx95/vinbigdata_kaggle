@@ -1,5 +1,6 @@
 #!/bin/bash
 
+pip install albumentations==0.5.2 wget==3.2
 pip install torch==1.7.1+cu101 torchvision==0.8.2+cu101 torchaudio===0.7.2 -f https://download.pytorch.org/whl/torch_stable.html
 # install mmcv-full thus we could use CUDA operators
 pip install mmcv-full

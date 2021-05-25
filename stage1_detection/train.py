@@ -8,7 +8,7 @@ import pandas as pd
 from tqdm import tqdm
 
 from utils import overwrite_base, Logger
-from config import GlobalConfig
+from configs.config import GlobalConfig
 
 import mmcv
 from mmcv import Config
@@ -64,7 +64,7 @@ if __name__ == '__main__':
 
     # Edit configuration settings
     final_config = overwrite_base(base_cfg, config, is_train=True)
-    with open(os.path.join(config.output_path, config.model_name+'.py'), 'w') as f:
+    with open(os.path.join(config.config_path, config.model_name+'.py'), 'w') as f:
         f.write(final_config.pretty_text)
 
     #Train

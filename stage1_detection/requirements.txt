@@ -1,2 +1,0 @@
-albumentations==0.5.2
-wget==3.2

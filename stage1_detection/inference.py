@@ -8,7 +8,7 @@ import pandas as pd
 from tqdm import tqdm
 
 from utils import overwrite_base, Logger
-from config import GlobalConfig
+from configs.config import GlobalConfig
 
 import mmcv
 from mmcv import Config
