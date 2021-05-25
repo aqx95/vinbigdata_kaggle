@@ -1,6 +1,7 @@
 class GlobalConfig:
 
     image_size = 1024
+    augment = True
 
     #model setting
     model_name = 'vfnet'

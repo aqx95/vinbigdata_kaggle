@@ -45,6 +45,49 @@ def overwrite_base(base, config, is_train=True):
     base.load_from = config.model_path
     base.work_dir = config.output_path + '_' + str(config.fold_num)
 
+    if config.augment:
+        base.train_pipeline = [
+            dict(type='LoadImageFromFile'),
+            dict(type='LoadAnnotations', with_bbox=True),
+            dict(
+                type='Resize',
+                img_scale=[(1333, 480), (1333, 960)],
+                multiscale_mode='range',
+                keep_ratio=True),
+            dict(type='RandomFlip', flip_ratio=0.5),
+            dict(
+                type='Albu',
+                transforms=[
+                    dict(type='RandomRotate90', p=0.3),
+                    dict(type='RandomBrightnessContrast', p=0.3),
+                    dict(
+                        type='ShiftScaleRotate',
+                        rotate_limit=10,
+                        scale_limit=0.15,
+                        p=0.3)
+                ],
+                bbox_params=dict(
+                    type='BboxParams',
+                    format='pascal_voc',
+                    label_fields=['gt_labels'],
+                    min_visibility=0.0,
+                    filter_lost_elements=True),
+                keymap=dict(img='image', gt_bboxes='bboxes'),
+                update_pad_shape=False,
+                skip_img_without_anno=True),
+            dict(
+                type='Normalize',
+                mean=[123.675, 116.28, 103.53],
+                std=[58.395, 57.12, 57.375],
+                to_rgb=True),
+            dict(type='Pad', size_divisor=32),
+            dict(type='DefaultFormatBundle'),
+            dict(type='Collect', keys=['img', 'gt_bboxes', 'gt_labels'])
+        ]
+        base.data.train.pipeline = base.train_pipeline
+
+
+
     ### Test config
     if not is_train:
         base.data.test.test_mode = config.test['test_mode']
