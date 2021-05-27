@@ -43,5 +43,5 @@ class GlobalConfig:
         'test_root_path': '../../../test',
         'test_mode': True,
         'pipeline_type': 'LoadImageFromFile',
-        'score_thr': 0.15
+        'score_thr': 0.05
     }
