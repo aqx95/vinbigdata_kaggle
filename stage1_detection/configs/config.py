@@ -31,7 +31,7 @@ class GlobalConfig:
     # Training
     samples_per_gpu = 4
     lr = 0.0025
-    seed = 0
+    seed = 2020
     num_epochs = 20
     gpu = [0]
 
