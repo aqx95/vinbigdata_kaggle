@@ -32,7 +32,7 @@ class GlobalConfig:
     samples_per_gpu = 4
     lr = 0.0025
     seed = 2020
-    num_epochs = 20
+    num_epochs = 12
     gpu = [0]
 
     # Logs
